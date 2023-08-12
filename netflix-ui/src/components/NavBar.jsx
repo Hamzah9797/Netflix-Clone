@@ -1,18 +1,75 @@
+import { signOut } from "firebase/auth";
 import React, { useState } from "react";
-import styled from "styled-components";
-import { FaPowerOff, FaSearch } from "react-icons/fa";
-import logo from "../assets/logo.png";
 import { Link } from "react-router-dom";
-import { onAuthStateChanged, signOut } from "firebase/auth";
+import styled from "styled-components";
+import logo from "../assets/logo.png";
 import { firebaseAuth } from "../utils/firebase-config";
-import { useNavigate } from "react-router-dom";
+import { FaPowerOff, FaSearch } from "react-icons/fa";
+export default function NavBar({ isScrolled }) {
+  const [showSearch, setShowSearch] = useState(false);
+  const [inputHover, setInputHover] = useState(false);
+  const links = [
+    { name: "Home", link: "/" },
+    { name: "TV Shows", link: "/tv" },
+    { name: "Movies", link: "/movies" },
+    { name: "My List", link: "/mylist" },
+  ];
+
+  return (
+    <Container>
+      <nav className={`${isScrolled ? "scrolled" : ""} flex`}>
+        <div className="left flex a-center">
+          <div className="brand flex a-center j-center">
+            <img src={logo} alt="Logo" />
+          </div>
+          <ul className="links flex">
+            {links.map(({ name, link }) => {
+              return (
+                <li key={name}>
+                  <Link to={link}>{name}</Link>
+                </li>
+              );
+            })}
+          </ul>
+        </div>
+        <div className="right flex a-center">
+          <div className={`search ${showSearch ? "show-search" : ""}`}>
+            <button
+              onFocus={() => setShowSearch(true)}
+              onBlur={() => {
+                if (!inputHover) {
+                  setShowSearch(false);
+                }
+              }}
+            >
+              <FaSearch />
+            </button>
+            <input
+              type="text"
+              placeholder="Search"
+              onMouseEnter={() => setInputHover(true)}
+              onMouseLeave={() => setInputHover(false)}
+              onBlur={() => {
+                setShowSearch(false);
+                setInputHover(false);
+              }}
+            />
+          </div>
+          <button onClick={() => signOut(firebaseAuth)}>
+            <FaPowerOff />
+          </button>
+        </div>
+      </nav>
+    </Container>
+  );
+}
 
 const Container = styled.div`
   .scrolled {
     background-color: black;
   }
   nav {
-    postion: sticky;
+    position: sticky;
     top: 0;
     height: 6.5rem;
     width: 100%;
@@ -20,9 +77,9 @@ const Container = styled.div`
     position: fixed;
     top: 0;
     z-index: 2;
-    padding: 0 5rem;
+    padding: 0 4rem;
     align-items: center;
-    transition: all 0.3s ease-in-out;
+    transition: 0.3s ease-in-out;
     .left {
       gap: 2rem;
       .brand {
@@ -35,7 +92,7 @@ const Container = styled.div`
         gap: 2rem;
         li {
           a {
-            color: #fff;
+            color: white;
             text-decoration: none;
           }
         }
@@ -64,26 +121,30 @@ const Container = styled.div`
         padding-left: 0.5rem;
         button {
           background-color: transparent;
+          border: none;
+          &:focus {
+            outline: none;
+          }
           svg {
-            color: #fff;
+            color: white;
+            font-size: 1.2rem;
           }
         }
         input {
           width: 0;
           opacity: 0;
           visibility: hidden;
-          transition: all 0.3s ease-in-out;
+          transition: 0.3s ease-in-out;
           background-color: transparent;
           border: none;
-          color: #fff;
-          border: none;
+          color: white;
           &:focus {
             outline: none;
           }
         }
       }
       .show-search {
-        border: 1px solid #fff;
+        border: 1px solid white;
         background-color: rgba(0, 0, 0, 0.6);
         input {
           width: 100%;
@@ -95,79 +156,3 @@ const Container = styled.div`
     }
   }
 `;
-
-const links = [
-  {
-    name: "Home",
-    path: "/",
-  },
-  {
-    name: "TV Shows",
-    path: "/tv-shows",
-  },
-  {
-    name: "Movies",
-    path: "/movies",
-  },
-  {
-    name: "My List",
-    path: "/mylist",
-  },
-];
-
-const NavBar = ({ isScrolled }) => {
-  const navigate = useNavigate();
-
-  const [showSearch, setShowSearch] = useState(false);
-  const [inputHover, setInputHover] = useState(false);
-
-  onAuthStateChanged(firebaseAuth, (user) => {
-    if (!user) navigate("/login");
-  });
-
-  return (
-    <Container>
-      <nav className={`flex ${isScrolled ? "scrolled" : ""}`}>
-        <div className="left flex a-center">
-          <div className="brand flex a-center j-center">
-            <img src={logo} alt="logo" />
-          </div>
-          <ul className="links flex">
-            {links.map((obj, i) => (
-              <li key={i}>
-                <Link to={obj.path}>{obj.name}</Link>
-              </li>
-            ))}
-          </ul>
-        </div>
-        <div className="right flex a-center">
-          <div className={`search ${showSearch ? "show-search" : ""}`}>
-            <button
-              onFocus={() => setShowSearch(true)}
-              onBlur={() => {
-                if (!inputHover) setShowSearch(false);
-              }}
-            >
-              <FaSearch />
-            </button>
-            <input
-              type="text"
-              placeholder="Search"
-              onMouseEnter={() => setInputHover(true)}
-              onMouseLeave={() => setInputHover(false)}
-              onBlur={() => {
-                setInputHover(false);
-                setShowSearch(false);
-              }}
-            />
-          </div>
-          <button onClick={() => signOut(firebaseAuth)}>
-            <FaPowerOff />
-          </button>
-        </div>
-      </nav>
-    </Container>
-  );
-};
-
-export default NavBar;
