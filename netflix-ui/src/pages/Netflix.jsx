@@ -1,11 +1,13 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
 import NavBar from "../components/NavBar";
 import BackgroundImage from "../assets/home.jpg";
 import MovieLogo from "../assets/homeTitle.webp";
 import { FaPlay } from "react-icons/fa";
 import { AiOutlineInfoCircle } from "react-icons/ai";
 import styled from "styled-components";
+import { getGenres } from "../store";
 
 const Container = styled.div`
   background-color: black;
@@ -60,10 +62,15 @@ const Container = styled.div`
 const Netflix = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   window.onscroll = () => {
     setIsScrolled(window.pageYOffset === 0 ? false : true);
     return () => (window.onscroll = null);
   };
+
+  useEffect(() => {
+    dispatch(getGenres());
+  }, []);
 
   return (
     <Container>
