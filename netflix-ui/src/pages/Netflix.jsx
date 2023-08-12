@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import NavBar from "../components/NavBar";
 import BackgroundImage from "../assets/home.jpg";
 import MovieLogo from "../assets/homeTitle.webp";
 import { FaPlay } from "react-icons/fa";
 import { AiOutlineInfoCircle } from "react-icons/ai";
 import styled from "styled-components";
-import { getGenres } from "../store";
+import { fetchMovies, getGenres } from "../store";
 
 const Container = styled.div`
   background-color: black;
@@ -63,6 +63,10 @@ const Netflix = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const genresLoaded = useSelector((state) => state.netflix.genresLoaded);
+  const movies = useSelector((state) => state.netflix.movies);
+  const genres = useSelector((state) => state.netflix.genres);
+
   window.onscroll = () => {
     setIsScrolled(window.pageYOffset === 0 ? false : true);
     return () => (window.onscroll = null);
@@ -71,6 +75,12 @@ const Netflix = () => {
   useEffect(() => {
     dispatch(getGenres());
   }, []);
+
+  useEffect(() => {
+    if (genresLoaded) {
+      dispatch(fetchMovies({ type: "all" }));
+    }
+  }, [genresLoaded]);
 
   return (
     <Container>
