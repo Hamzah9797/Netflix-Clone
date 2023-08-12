@@ -8,6 +8,7 @@ import { FaPlay } from "react-icons/fa";
 import { AiOutlineInfoCircle } from "react-icons/ai";
 import styled from "styled-components";
 import { fetchMovies, getGenres } from "../store";
+import Slider from "../components/Slider";
 
 const Container = styled.div`
   background-color: black;
@@ -65,7 +66,6 @@ const Netflix = () => {
   const dispatch = useDispatch();
   const genresLoaded = useSelector((state) => state.netflix.genresLoaded);
   const movies = useSelector((state) => state.netflix.movies);
-  const genres = useSelector((state) => state.netflix.genres);
 
   window.onscroll = () => {
     setIsScrolled(window.pageYOffset === 0 ? false : true);
@@ -108,6 +108,7 @@ const Netflix = () => {
           </div>
         </div>
       </div>
+      <Slider movies={movies} />
     </Container>
   );
 };
